@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- *Do not use any later versions than 2.4.12 due to [a bug in Phing](http://www.phing.info/trac/ticket/958)*. -->
-<project name="mz_box" default="build" phingVersion="2.4.11">
+<project name="scoop" default="build" phingVersion="2.4.11">
 
 <!-- ## Main targets -->
 
@@ -359,5 +359,13 @@ part of make target.-->
     <!-- Run drush from the project Drupal directory -->
     <property name="drush.root" value="${project.drupal.dir}"/>
   </target>
+
+    <target name="behat" description="Run Scenario with Behat" depends="load-properties, setup-dirs">
+        <property name="behat.basedir" value="${project.basedir}/${profile.dir}/tests/behat"/>
+        <exec executable="${behat.basedir}/bin/behat">
+            <arg line=" --config='${behat.basedir}/behat.yml' --format=pretty --out='${project.basedir}/logs/behat' ${behat.basedir}/features" />
+        </exec>
+    </target>
+
 
 </project>
