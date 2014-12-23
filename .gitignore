@@ -51,3 +51,4 @@ build.properties
 ################
 user.anonymous.json
 
+build.default.properties
