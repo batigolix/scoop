@@ -1,22 +1,58 @@
-Behat tests
-===========
+Starter kit for DrupalExtension
+===============================
 
-Setup
------
+How to start
+------------
 
- 1. Install Composer
+Clone it:
 
-    php -r "eval('?>'.file_get_contents('https://getcomposer.org/installer'));"
+    git clone git@github.com:tanarurkerem/DrupalExtensionStarterKit.git
 
- 2. Install Behat and dependencies via Composer
+Initialize:
 
-    php composer.phar install
+    bash init.sh
 
- 3. Copy behat.yml.example to behat.yml and modify
+If you would like to use Selenium test, start selenium:
 
-    cp behat.template.yml behat.yml
+    bash selenium.sh start
 
- 4. Run Behat and examine test results!
+Set your enviroment:
+
+    bash setenviroment.sh
+
+Use:
 
     bin/behat
 
+Update:
+
+    bash update.sh
+
+Some tips:
+----------
+
+Print all available step definitions:
+
+    bin/behat -dl
+
+Print \*.feature example:
+
+    bin/behat --story-syntax
+
+Run tests:
+
+    bin/behat
+
+Run one test(eg.: testEnviromentWorks.feature in your features directory):
+
+    bin/behat features/testEnviromentWorks.feature
+
+Use Selenium:
+  Add @javascript tag to your Feature or Scenario
+
+Usefull links:
+
+* http://behat.org/
+* https://drupal.org/project/drupalextension
+
+Enjoy!
