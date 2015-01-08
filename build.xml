@@ -30,7 +30,7 @@ environment such as which version of Drupal you are using, how to create a
 database and the names of your custom modules.
 
 All available properties are described and set to a default value in `build.default.properties`.
-You should create your own properties file by copying the `build.default.properties` file to the root 
+You should create your own properties file by copying the `build.default.properties` file to the root
 directory, rename it `build.properties` and modify it according to your project.
 
 Both property files are loaded so your custom `build.properties` file should
@@ -107,7 +107,7 @@ root directory. -->
 
     <!-- Clone the makefile in a temporary directory-->
     <phingcall target="setup-git-repo">
-      <property name="repo.dir" 
+      <property name="repo.dir"
                 value="${phing.tempdir}"/>
       <property name="repo.url"
                 value="${drupal.make.repo}" />
@@ -273,7 +273,7 @@ part of make target.-->
     </drush>
     <!-- Enable mz_migrate_example for context fixture demonstration purposes. -->
     <drush command="en" assume="yes">
-      <param>mz_migrate_example</param>
+      <param>mapmock</param>
     </drush>
     <if>
       <istrue value="${drupal.migrate}"/>
@@ -365,6 +365,23 @@ part of make target.-->
         <exec executable="${behat.basedir}/bin/behat">
             <arg line=" --config='${behat.basedir}/behat.yml' --format=pretty --out='${project.basedir}/logs/behat' ${behat.basedir}/features" />
         </exec>
+    </target>
+
+    <!-- ### Create a drush aliases file -->
+
+    <target name="aliases" description="Create a drush aliases file" depends="load-properties">
+        <property name="aliases.file" value="aliases.drushrc.php"/>
+        <if>
+            <not>
+                <available file="${aliases.file}"/>
+            </not>
+            <then>
+                <touch file="${aliases.file}"/>
+                <chmod file="${aliases.file}" mode="755" failonerror="true"/>
+                <append destFile="${aliases.file}" text="&lt;&#63;php ${line.separator}" />
+                <append destFile="${aliases.file}" text="$aliases['${project.alias}'] = array(${line.separator}  'parent' => '${project.alias.parent}',${line.separator}  'uri' => '${project.uri}',${line.separator}  'root' => '${project.root}',${line.separator}  'path-aliases' => array(${line.separator}    '%files' => '${project.files.folder}',${line.separator}  ),${line.separator});${line.separator}" />
+            </then>
+        </if>
     </target>
 
 
