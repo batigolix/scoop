@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/profiles/dekremer" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/profiles/dekremer/modules/custom/petiole" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/profiles/dekremer/modules/custom/ec_world_countries" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/profiles/dekremer/modules/custom/mapeditor" vcs="Git" />
   </component>
 </project>
