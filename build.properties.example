@@ -1,9 +1,0 @@
-# Your local properties file, to be adapted and renamed to `build.properties`
-
-#drupal.db.url = mysql://USER:PASS@localhost/DATABASE
-
-drupal.db.url = mysql://root:root@localhost/mapper
-
-project.logdir = logs
-profile.dir = profiles/dekremer
-project.url = mapper.val
