@@ -121,9 +121,9 @@ root directory. -->
       <then>
         <!-- Make and keep the working copies -->
         <drush command="make" assume="yes">
+            <option name="working-copy"></option>
           <param>${phing.tempdir}/${drupal.make.makefile}</param>
-          <option name="working-copy"></option>
-          <param>.</param>
+          <param>docroot</param>
         </drush>
       </then>
       <else>
@@ -269,10 +269,6 @@ part of make target.-->
     <drush command="en" assume="yes">
       <param>migrate,migrate_ui</param>
     </drush>
-    <!-- Enable mz_migrate_example for context fixture demonstration purposes. -->
-    <drush command="en" assume="yes">
-      <param>mapmock</param>
-    </drush>
     <if>
       <istrue value="${drupal.migrate}"/>
       <then>
@@ -355,7 +351,7 @@ part of make target.-->
              classpath="${phing.toolsdir}/phing-drush" />
 
     <!-- Run drush from the project Drupal directory -->
-    <property name="drush.root" value="${project.drupal.dir}"/>
+    <property name="drush.root" value="${project.drupal.dir}/${drupal.folder}"/>
   </target>
 
     <target name="behat" description="Run Scenario with Behat" depends="load-properties, setup-dirs">
