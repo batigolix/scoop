@@ -54,9 +54,6 @@ build.properties
 ################
 user.anonymous.json
 
-build.default.properties
-build.properties
-
 # ignore build generateed
 CHANGELOG.txt
 COPYRIGHT.txt
