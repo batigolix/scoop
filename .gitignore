@@ -1,3 +1,6 @@
+# local build properties must be different in each environment
+build.properties.local
+
 # Ignore configuration files that may contain sensitive information. #
 ######################################################################
 sites/*/settings*.php
