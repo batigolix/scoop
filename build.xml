@@ -3,50 +3,38 @@
 <!-- *Do not use any later versions than 2.4.12 due to [a bug in Phing](http://www.phing.info/trac/ticket/958)*. -->
 <project name="scoop" default="help" phingVersion="2.4.11">
 
-    <!-- If `build.properties.local` exists then we want it -->
+    <!-- fetches variables from local properties, if they exist -->
     <if>
         <available file="build.properties.local"/>
         <then>
             <property file="build.properties.local"/>
         </then>
     </if>
-    <!-- phing loads missing varibales from default -->
+    <!-- loads missing variables from default -->
     <property file="build.properties"/>
 
     <!-- prints help text -->
-    <target name="help" description="Phing target list">
-        <exec executable="${phing.bin}"
+    <target name="help" description="Shows list of Phing targets">
+        <exec executable="phing"
               passthru="true">
             <arg value="-l"/>
         </exec>
     </target>
 
-    <!-- ### Build project
-
-Do a complete build of the project by verifying code consistency and and
-performing static analysis of the code.
-
-This is the default build target.
--->
-
+    <!-- does everything -->
     <target name="build"
-            description="Install the site and migrate content"
-            depends="site-install,
-                   enable-dev-mode,
+            description="Installs the site and migrates content"
+            depends="make, site-install,
                    run-migrate,
-                   config-masquerade,
+                   aliases,
                    check-features"/>
 
-    <target name="make-build"
-            depends="make,build"
-            description="Makes and builds the profile">
-    </target>
-
+    <!-- fetches and organizes code base -->
     <target name="make"
             depends="setup-phing-drush"
             description="Rebuilds the profile using Drush make">
 
-        <!-- Clone the makefile in a temporary directory-->
+        <!-- clones the makefile in a temporary directory -->
         <phingcall target="setup-git-repo">
             <property name="repo.dir"
                       value="${phing.tempdir}"/>
@@ -56,11 +44,11 @@ This is the default build target.
                       value="${drupal.make.revision}"/>
         </phingcall>
 
-        <!-- Make the project in the current directory. Easiest for deployment -->
+        <!-- fetches the code using drush make -->
         <if>
             <istrue value="${drupal.make.working_copy}"/>
             <then>
-                <!-- Make and keep the working copies -->
+                <!-- makes and keeps the working copies -->
                 <drush command="make" assume="yes">
                     <option name="working-copy"></option>
                     <param>${phing.tempdir}/${drupal.make.makefile}</param>
@@ -68,7 +56,7 @@ This is the default build target.
                 </drush>
             </then>
             <else>
-                <!-- Normal drush make -->
+                <!-- makes normal -->
                 <drush command="make" assume="yes">
                     <param>${phing.tempdir}/${drupal.make.makefile}</param>
                     <param>.</param>
@@ -83,7 +71,8 @@ This is the default build target.
 
     <!-- Removes all files of the Drupal installation -->
     <target name="clean"
-            description="Removes a Drupal installation. Use carefully!" depends="123">
+            description="Removes a Drupal installation. Use carefully!"
+            depends="">
         <foreach
                 list="includes,misc,modules,profiles,scripts,sites,themes,phing"
                 param="item" target="delete-dir" delimiter=","/>
@@ -101,9 +90,8 @@ This is the default build target.
     </target>
 
 
-
     <target name="setup-dirs"
-            depends="load-properties">
+            depends="">
         <property name="project.drupal.dir"
                   value="${project.basedir}"/>
 
@@ -144,10 +132,10 @@ This is the default build target.
         </if>
     </target>
 
-
+    <!-- installs the site -->
     <target name="site-install"
             depends="setup-phing-drush"
-            description="Installs the site"
+            description="Installs the site using drush site-install"
             unless="project.installed">
         <drush command="site-install" assume="yes">
             <option name="db-url">${drupal.db.url}</option>
@@ -161,29 +149,6 @@ This is the default build target.
 
         <phingcall target="setup-permissions"/>
 
-        <!-- Enable RewriteBase in .htaccess if the installation is to be
-    exposed through Apache with virtual document root as clean urls are enabled
-    by default.
-
-    Keep legacy support for drupal.make.rewritebase when this was handled as a
-    part of make target.-->
-        <condition property="drupal.rewritebase"
-                   value="${drupal.make.rewritebase}">
-            <isset property="drupal.make.rewritebase"/>
-        </condition>
-        <if>
-            <isset property="drupal.rewritebase"/>
-            <then>
-                <reflexive file="${project.drupal.dir}/.htaccess">
-                    <filterchain>
-                        <replaceregexp>
-                            <regexp pattern="# RewriteBase [\w/]*"
-                                    replace="RewriteBase ${drupal.rewritebase}"/>
-                        </replaceregexp>
-                    </filterchain>
-                </reflexive>
-            </then>
-        </if>
 
         <!-- Set property to prevent target from being executed multiple times -->
         <property name="project.installed" value="true"/>
@@ -209,22 +174,6 @@ This is the default build target.
                 </drush>
             </then>
         </if>
-    </target>
-
-    <!-- ### Configure masquerade -->
-    <target name="config-masquerade"
-            description="Configure masquerade"
-            depends="run-migrate, setup-phing-drush">
-        <drush command="user-create" assume="yes">
-            <param>editor</param>
-            <option name="password">editor</option>
-            <option name="mail">editor@example.org</option>
-        </drush>
-        <!-- Little trick to automatically configure masquerade to show quick switches for two users. Very useful for quick role testing. -->
-        <exec command='php -r "print json_encode(array(0 => 3));" | drush vset --yes --format=json masquerade_quick_switches -'
-              escape="false"
-              checkreturn="true"
-              passthru="true"/>
     </target>
 
     <!-- ### Check features state -->
@@ -284,13 +233,13 @@ This is the default build target.
         <taskdef name="drush" classname="DrushTask"
                  classpath="${phing.toolsdir}/phing-drush"/>
 
-        <!-- Run drush from the project Drupal directory -->
+        <!-- runs drush from the project Drupal directory -->
         <property name="drush.root"
                   value="${project.drupal.dir}/${drupal.folder}"/>
     </target>
 
     <target name="behat" description="Run Scenario with Behat"
-            depends="load-properties, setup-dirs">
+            depends="setup-dirs">
         <property name="behat.basedir"
                   value="${project.basedir}/${profile.dir}/tests/behat"/>
         <exec executable="${behat.basedir}/bin/behat">
@@ -298,10 +247,9 @@ This is the default build target.
         </exec>
     </target>
 
-    <!-- ### Create a drush aliases file -->
-
-    <target name="aliases" description="Create a drush aliases file"
-            depends="load-properties">
+    <!-- creates a drush aliases file -->
+    <target name="aliases" description="Creates a drush aliases file"
+            depends="">
         <property name="aliases.file" value="aliases.drushrc.php"/>
         <if>
             <not>
@@ -317,6 +265,5 @@ This is the default build target.
             </then>
         </if>
     </target>
-
 
 </project>
