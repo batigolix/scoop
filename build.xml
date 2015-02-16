@@ -59,7 +59,7 @@
                 <!-- makes normal -->
                 <drush command="make" assume="yes">
                     <param>${phing.tempdir}/${drupal.make.makefile}</param>
-                    <param>.</param>
+                    <param>docroot</param>
                 </drush>
             </else>
         </if>
