@@ -95,12 +95,7 @@
         <property name="project.drupal.dir"
                   value="${project.basedir}"/>
 
-        <property name="project.sitesdir"
-                  value="${project.drupal.dir}/${project.code.dir}"/>
-
-        <property name="project.toolsdir"
-                  value="${project.basedir}/sites/all/drush"/>
-
+        <exec command="chmod a+w ${project.root}/${project.files.folder}" escape="false" />
     </target>
 
 
@@ -188,9 +183,7 @@
             description="Configures this installation for use in development"
             depends="setup-phing-drush">
         <drush command="en" assume="yes">
-            <param>devel, admin_menu, environment_indicator, devel,
-                devel_generate
-            </param>
+            <param>devel, admin_menu, environment_indicator, devel, devel_generate, dblog</param>
         </drush>
     </target>
 
